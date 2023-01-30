@@ -10,11 +10,11 @@ public class Boj2596 {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
 		String line = br.readLine();
-		char[][] diary = new char[T][6];
+		char[][] arr = new char[T][6];
 
 		for (int i = 0; i < T; i++) {
 			for (int j = 0; j < 6; j++) {
-				diary[i][j] = line.charAt(6 * i + j);
+				arr[i][j] = line.charAt(6 * i + j);
 			}
 		}
 
@@ -25,10 +25,10 @@ public class Boj2596 {
 		boolean output_str = true; // 출력 결과가 문자열이면 true, 모르는 문자가 나오면 false
 		
 		for (int i = 0; i < T; i++) { // 각 문자에 대해
-			int[] count_wrong = new int[8]; // 각 문자별로 보낸 코드와 다른  개수 카운트
+			int[] count_wrong = new int[8]; // 각 문자별로 보낸 코드와 다른 개수 카운트
 			for (int j = 0; j < 6; j++) {
 				for (int d = 0; d < code.length; d++) {
-					if (diary[i][j] != code[d].charAt(j))
+					if (arr[i][j] != code[d].charAt(j))
 						count_wrong[d]++;
 				}
 			}
