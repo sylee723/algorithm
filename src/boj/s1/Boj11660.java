@@ -10,7 +10,7 @@ public class Boj11660 {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-
+		StringBuilder sb = new StringBuilder();
 		int N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
 		int[][] sum_row = new int[N + 1][N + 1]; // 행마다 합을 구함
@@ -32,9 +32,9 @@ public class Boj11660 {
 			for (int i = x1; i <= x2; i++) {
 				result += (sum_row[i][y2] - sum_row[i][y1 - 1]);
 			}
-
-			System.out.println(result);
+			sb.append(result).append("\n");
+//			System.out.println(result);
 		}
-
+		System.out.println(sb.toString());
 	}
 }
