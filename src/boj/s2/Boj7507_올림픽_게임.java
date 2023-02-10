@@ -28,7 +28,6 @@ public class Boj7507_올림픽_게임 {
 				days = Math.max(days, game[m][0]); // 경기가 며칠까지 있는지
 			}
 			Arrays.sort(game, new Comparator<int[]>() {
-
 				@Override
 				public int compare(int[] o1, int[] o2) {
 					if (o1[0] == o2[0])
@@ -49,8 +48,9 @@ public class Boj7507_올림픽_게임 {
 				
 				
 				count[day]++;
+				
 			}
-			System.out.println("Scenario #" + t + ":");
+//			System.out.println("Scenario #" + t + ":");
 		}
 	}
 }

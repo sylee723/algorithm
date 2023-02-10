@@ -23,16 +23,15 @@ public class Boj1992_쿼드트리 {
 	}
 
 	static String compression(int si, int sj, int n) {
-		int result = 3;
-		if (checkDot(si, sj, n))
-			result = input[si][sj];
-		else {
-			checkDot(si, sj, n / 2);
-			checkDot(si, sj + n / 2, n / 2);
-			checkDot(si + n / 2, sj, n / 2);
-			checkDot(si + n / 2, sj + n / 2, n / 2);
-		}
-		return "(" + Integer.toString(result) + ")";
+		if (checkDot(si, sj, n)) // 모두 0으로만 또는 1으로만 이루어져 있으면
+			return Integer.toString(input[si][sj]);
+		String result = "";
+		result += compression(si, sj, n / 2);
+		result += compression(si, sj + n / 2, n / 2);
+		result += compression(si + n / 2, sj, n / 2);
+		result += compression(si + n / 2, sj + n / 2, n / 2);
+
+		return "(" + result + ")";
 	}
 
 	static boolean checkDot(int si, int sj, int n) {
