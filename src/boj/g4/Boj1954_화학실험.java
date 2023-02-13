@@ -1,4 +1,4 @@
-package boj.g1;
+package boj.g4;
 
 import java.util.Scanner;
 
