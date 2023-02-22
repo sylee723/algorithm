@@ -1,7 +1,8 @@
-package boj.g5;
+package boj.g4;
 
 import java.util.Arrays;
 
+// 해결 못함
 public class Boj6987_월드컵 {
 	static int[][] result;
 	static boolean[] selected;
