@@ -33,7 +33,6 @@ public class Boj4963_섬의_개수_DFS {
 				for (int j = 0; j < M; j++) {
 					if (map[i][j] == 1) {
 						count++;
-						map[i][j] = 0;
 						dfs(i, j);
 					}
 				}
@@ -43,12 +42,13 @@ public class Boj4963_섬의_개수_DFS {
 	}
 
 	static void dfs(int i, int j) {
+		map[i][j] = 0; // 방문 체크
+		
 		for (int d = 0; d < 8; d++) {
 			int ni = i + di[d];
 			int nj = j + dj[d];
 
 			if (ni >= 0 && ni < N && nj >= 0 && nj < M && map[ni][nj] == 1) {
-				map[ni][nj] = 0;
 				dfs(ni, nj);
 			}
 		}
