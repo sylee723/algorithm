@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class Boj4963_섬의_개수 {
+public class Boj4963_섬의_개수_DFS {
 	static int N, M;
 	static int[] di = { -1, 1, 0, 0, -1, -1, 1, 1 };
 	static int[] dj = { 0, 0, -1, 1, -1, 1, -1, 1 };
@@ -33,7 +33,6 @@ public class Boj4963_섬의_개수 {
 				for (int j = 0; j < M; j++) {
 					if (map[i][j] == 1) {
 						count++;
-						map[i][j] = 0;
 						dfs(i, j);
 					}
 				}
@@ -43,12 +42,13 @@ public class Boj4963_섬의_개수 {
 	}
 
 	static void dfs(int i, int j) {
+		map[i][j] = 0; // 방문 체크
+		
 		for (int d = 0; d < 8; d++) {
 			int ni = i + di[d];
 			int nj = j + dj[d];
 
 			if (ni >= 0 && ni < N && nj >= 0 && nj < M && map[ni][nj] == 1) {
-				map[ni][nj] = 0;
 				dfs(ni, nj);
 			}
 		}
