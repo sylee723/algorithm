@@ -7,11 +7,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+// 해결 못함
 public class Boj1987_알파벳 {
 	static int R, C, count;
 	static char[][] board;
 	static boolean[] used;
-	static boolean[][] visited;
 	static int[] di = { -1, 1, 0, 0 };
 	static int[] dj = { 0, 0, -1, 1 };
 
@@ -28,9 +28,9 @@ public class Boj1987_알파벳 {
 		}
 
 		used = new boolean[26]; // 사용된 알파벳인지 체크
-		visited = new boolean[R][C];
 
-		bfs(0, 0);
+		count = 0;
+		dfs(0, 0);
 
 		System.out.println(count);
 //		for(int i = 0; i<used.length;i++) {
@@ -40,29 +40,19 @@ public class Boj1987_알파벳 {
 //		}
 	}
 
-	private static void bfs(int si, int sj) {
-		Queue<Point> queue = new LinkedList<>();
-		visited[si][sj] = true;
+	private static void dfs(int si, int sj) {
 		used[board[si][sj] - 'A'] = true;
-		queue.add(new Point(si, sj));
+		count++;
+		for (int d = 0; d < 4; d++) {
+			int nexti = si + di[d];
+			int nextj = sj + dj[d];
 
-		count = 0;
-		while (!queue.isEmpty()) {
-			Point now = queue.poll();
-			count++;
-
-			for (int d = 0; d < 4; d++) {
-				int nexti = now.i + di[d];
-				int nextj = now.j + dj[d];
-
-				if (nexti >= 0 && nexti < R && nextj >= 0 && nextj < C && !visited[nexti][nextj]
-						&& !used[board[nexti][nextj] - 'A']) {
-					visited[nexti][nextj] = true;
-					used[board[nexti][nextj] - 'A'] = true;
-					queue.add(new Point(nexti, nextj));
-				}
+			if (nexti >= 0 && nexti < R && nextj >= 0 && nextj < C 
+					&& !used[board[nexti][nextj] - 'A']) {
+				dfs(nexti, nextj);
 			}
 		}
+		used[board[si][sj] - 'A'] = false;
 	}
 
 	static class Point {
