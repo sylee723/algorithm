@@ -1,5 +1,7 @@
 package boj.g4;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class Boj17471_게리맨더링 {
@@ -17,7 +19,6 @@ public class Boj17471_게리맨더링 {
 		}
 
 		adjMatrix = new int[N + 1][N + 1];
-
 		for (int i = 1; i <= N; i++) {
 			int num = sc.nextInt();
 			for (int n = 0; n < num; n++) {
@@ -25,6 +26,7 @@ public class Boj17471_게리맨더링 {
 				adjMatrix[i][j] = 1;
 			}
 		}
+
 		selected = new boolean[N + 1];
 		minDiff = Integer.MAX_VALUE;
 		subset(1, 0);
@@ -49,6 +51,7 @@ public class Boj17471_게리맨더링 {
 						pcount2 += peopleNum[i];
 					}
 				}
+
 				minDiff = Math.min(minDiff, Math.abs(pcount1 - pcount2));
 			}
 
@@ -64,15 +67,41 @@ public class Boj17471_게리맨더링 {
 	private static boolean isAvailable() {
 		boolean[] check1 = new boolean[N + 1];
 		boolean[] check2 = new boolean[N + 1];
+		Queue<Integer> queue1 = new LinkedList<>();
+		Queue<Integer> queue2 = new LinkedList<>();
 
 		for (int i = 1; i <= N; i++) {
-			for (int j = 1 + 1; j <= N; j++) {
-				if (selected[i] && selected[j] && adjMatrix[i][j] == 1) {
-					check1[i] = true;
+			if (selected[i]) {
+				queue1.add(i);
+				check1[i] = true;
+				break;
+			}
+		}
+
+		while (!queue1.isEmpty()) {
+			int now = queue1.poll();
+			for (int j = 1; j <= N; j++) {
+				if (adjMatrix[now][j] == 1 && selected[j] && !check1[j]) {
 					check1[j] = true;
-				} else if (!selected[i] && !selected[j] && adjMatrix[i][j] == 1) {
-					check2[i] = true;
+					queue1.add(j);
+				}
+			}
+		}
+
+		for (int i = 1; i <= N; i++) {
+			if (!selected[i]) {
+				queue2.add(i);
+				check2[i] = true;
+				break;
+			}
+		}
+
+		while (!queue2.isEmpty()) {
+			int now = queue2.poll();
+			for (int j = 1; j <= N; j++) {
+				if (adjMatrix[now][j] == 1 && !selected[j] && !check2[j]) {
 					check2[j] = true;
+					queue2.add(j);
 				}
 			}
 		}
