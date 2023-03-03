@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-// 해결 못함
 public class Boj13023_ABCDE {
-	static int N;
+	static int N, answer;
 	static ArrayList<Integer>[] friendList;
 	static boolean[] visited;
 
@@ -32,29 +31,30 @@ public class Boj13023_ABCDE {
 			friendList[b].add(a);
 		}
 
-		int answer = 0;
+		answer = 0;
 		for (int i = 0; i < N; i++) {
 			visited = new boolean[N];
-			visited[i] = true;
-			if (dfs(i, 0)) {
-				answer = 1;
-				break;
-			}
+			dfs(i, 0);
 		}
-		System.out.println(answer);
+		
+		if (answer >= 4)
+			System.out.println(1);
+		else
+			System.out.println(0);
 	}
 
-	private static boolean dfs(int v, int link) {
-		if (link >= 4)
-			return true;
-
+	private static void dfs(int v, int link) {
+		answer = Math.max(answer, link);
+		if (answer >= 4)
+			return;
+		
+		visited[v] = true;
 		for (int f : friendList[v]) {
 			if (!visited[f]) {
 				visited[f] = true;
 				dfs(f, link + 1);
-				visited[f] = false;
 			}
 		}
-		return false;
+		visited[v] = false;
 	}
 }
