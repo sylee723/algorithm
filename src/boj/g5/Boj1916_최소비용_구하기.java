@@ -14,14 +14,27 @@ public class Boj1916_최소비용_구하기 {
 		int[][] adjMatrix = new int[N + 1][N + 1];
 		StringTokenizer st;
 		int from, to, cost;
+
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				adjMatrix[i][j] = -1;
+				if (i == j)
+					adjMatrix[i][j] = 0;
+			}
+		}
+
 		for (int m = 0; m < M; m++) {
 			st = new StringTokenizer(br.readLine());
 			from = Integer.parseInt(st.nextToken());
 			to = Integer.parseInt(st.nextToken());
 			cost = Integer.parseInt(st.nextToken());
 
-			adjMatrix[from][to] = cost;
+			if (adjMatrix[from][to] == -1)
+				adjMatrix[from][to] = cost;
+			else
+				adjMatrix[from][to] = Math.min(adjMatrix[from][to], cost);
 		}
+
 		st = new StringTokenizer(br.readLine());
 		int start = Integer.parseInt(st.nextToken());
 		int goal = Integer.parseInt(st.nextToken());
@@ -45,17 +58,21 @@ public class Boj1916_최소비용_구하기 {
 				}
 			}
 
-			if (now == -1 || now == goal)
+			if (now == -1)
 				break;
-			
+
 			visited[now] = true;
+
+			if (now == goal)
+				break;
+
 			for (int j = 1; j <= N; j++) {
-				if (!visited[j] && adjMatrix[now][j] != 0 && distance[j] > distance[now] + adjMatrix[now][j]) {
+				if (!visited[j] && adjMatrix[now][j] != -1 && distance[j] > distance[now] + adjMatrix[now][j]) {
 					distance[j] = distance[now] + adjMatrix[now][j];
 				}
 			}
 		}
-		
+
 		System.out.println(distance[goal]);
 	}
 }
