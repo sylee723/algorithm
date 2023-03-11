@@ -4,15 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.StringTokenizer;
 
-// 시간 초과
 public class Boj17143_낚시왕 {
 	static int R, C, M, answer;
 	static ArrayList<Shark> shark;
 	static int[] di = { -1, 1, 0, 0 };
 	static int[] dj = { 0, 0, 1, -1 };
+	static Shark[][] visited;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -32,6 +31,12 @@ public class Boj17143_낚시왕 {
 			int s = Integer.parseInt(st.nextToken());
 			int d = Integer.parseInt(st.nextToken()) - 1;
 			int z = Integer.parseInt(st.nextToken());
+
+			if (d == 0 || d == 1) { // 상하 방향 이동
+				s = s % (2 * (R - 1)) + 2 * (R - 1);
+			} else { // 좌우 방향 이동
+				s = s % (2 * (C - 1)) + 2 * (C - 1);
+			}
 			shark.add(new Shark(r, c, s, d, z, a++));
 		}
 
@@ -45,9 +50,26 @@ public class Boj17143_낚시왕 {
 		System.out.println(answer);
 	}
 
-	private static void move() {
-		ArrayList<Integer> remove = new ArrayList<>();
+	private static void fishing(int col) { // col번 열에 있는 상어 중 땅과 제일 가까운 상어를 잡는다
+		int minIdx = R + 1;
+		int removeIdx = -1;
+		for (int i = 0; i < shark.size(); i++) {
+			Shark sh = shark.get(i);
+			if (sh.j == col && minIdx > sh.i) {
+				minIdx = Math.min(minIdx, sh.i);
+				removeIdx = i;
+			}
+		}
+		if (removeIdx != -1) {
+//		System.out.println("낚시: " + shark.get(removeIdx));
+			answer += shark.get(removeIdx).z;
+			shark.remove(removeIdx);
+		}
+	}
 
+	private static void move() {
+		visited = new Shark[R + 1][C + 1];
+		ArrayList<Character> remove = new ArrayList<>();
 		for (int x = 0; x < shark.size(); x++) {
 			Shark now = shark.get(x);
 
@@ -77,46 +99,27 @@ public class Boj17143_낚시왕 {
 			now.i = nexti;
 			now.j = nextj;
 
+			if (visited[nexti][nextj] != null) { // 같은 칸에 상어가 있으면 크기가 작은 상어 먹힘
+				Shark sh = visited[nexti][nextj];
+				if (sh.z > now.z) {
+					remove.add(now.alpha);
+				} else {
+					remove.add(sh.alpha);
+					visited[nexti][nextj] = now;
+				}
+			} else {
+				visited[nexti][nextj] = now;
+			}
 		}
 //		System.out.println("이동 후");
 //		System.out.println(shark);
 
-		// 같은 칸에 있으면 잡아 먹기
-		for (int i = 0; i < shark.size(); i++) {
-			for (int j = i + 1; j < shark.size(); j++) {
-				Shark shark1 = shark.get(i);
-				Shark shark2 = shark.get(j);
-
-				if (shark1.i == shark2.i && shark1.j == shark2.j) { // 같은 위치에 있으면
-					if (shark1.z < shark2.z) {
-						remove.add(i);
-					} else {
-						remove.add(j);
-					}
-				}
-			}
-		}
-
 		for (int i = shark.size() - 1; i >= 0; i--) {
-			if (remove.contains(i))
+			if (remove.contains(shark.get(i).alpha))
 				shark.remove(i);
 		}
 //		System.out.println("먹힘");
 //		System.out.println(shark);
-//		System.out.println("####################");
-	}
-
-	private static void fishing(int col) { // col번 열에 있는 상어 중 땅과 제일 가까운 상어를 잡는다
-		Collections.sort(shark); // 상어의 열 인덱스 오름차순으로 정렬. 땅이랑 가까운 상어 먼저 확인
-		for (int i = 0; i < shark.size(); i++) {
-			Shark sh = shark.get(i);
-			if (sh.j == col) {
-				answer += sh.z;
-//				System.out.println("낚시: " + shark.get(i));
-				shark.remove(i);
-				break;
-			}
-		}
 	}
 
 	static class Shark implements Comparable<Shark> {
