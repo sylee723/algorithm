@@ -3,9 +3,8 @@ package boj.g4;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class Boj7662_이중_우선순위_큐 {
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -13,13 +12,12 @@ public class Boj7662_이중_우선순위_큐 {
 		int T = Integer.parseInt(br.readLine());
 		StringTokenizer st;
 		char op;
-		int K, n, max, min;
+		int K, n;
 		StringBuilder sb = new StringBuilder();
 
 		for (int t = 0; t < T; t++) {
 			K = Integer.parseInt(br.readLine());
-			PriorityQueue<Integer> minQ = new PriorityQueue<>();
-			PriorityQueue<Integer> maxQ = new PriorityQueue<>(Collections.reverseOrder());
+			TreeMap<Integer, Integer> queue = new TreeMap<>();
 
 			for (int k = 0; k < K; k++) {
 				st = new StringTokenizer(br.readLine());
@@ -27,23 +25,26 @@ public class Boj7662_이중_우선순위_큐 {
 				n = Integer.parseInt(st.nextToken());
 
 				if (op == 'I') { // 삽입
-					minQ.add(n);
-					maxQ.add(n);
-				} else if (op == 'D' && !minQ.isEmpty()) {
+					queue.put(n, queue.getOrDefault(n, 0) + 1);
+				} else if (op == 'D' && !queue.isEmpty()) { // 삭제
+					int key;
 					if (n == 1) { // 최댓값 삭제
-						max = maxQ.poll();
-						minQ.remove(max);
-					} else if (n == -1) { // 최솟값 삭제
-						min = minQ.poll();
-						maxQ.remove(min);
+						key = queue.lastKey();
+					} else { // 최솟값 삭제
+						key = queue.firstKey();
 					}
+
+					if (queue.get(key) == 1)
+						queue.remove(key);
+					else
+						queue.put(key, queue.get(key) - 1);
 				}
 			}
 
-			if (minQ.isEmpty()) {
+			if (queue.isEmpty()) {
 				sb.append("EMPTY").append("\n");
 			} else {
-				sb.append(maxQ.peek()).append(" ").append(minQ.peek()).append("\n");
+				sb.append(queue.lastKey()).append(" ").append(queue.firstKey()).append("\n");
 			}
 		}
 		System.out.println(sb.toString());
