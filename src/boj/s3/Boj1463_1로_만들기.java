@@ -19,16 +19,16 @@ public class Boj1463_1로_만들기 {
 	}
 
 	private static void dfs(int n, int d, boolean[] visited) {
-		System.out.println(n+"/"+d);
+//		System.out.println(n + "/" + d);
 		if (n == 1) {
-			System.out.println("ans:"+answer);
+//			System.out.println("ans:" + answer);
 			answer = Math.min(answer, d);
 			return;
 		}
-		
+
 		if (d >= answer)
 			return;
-		
+
 		visited[n] = true;
 
 		if (n % 3 == 0 && !visited[n / 3]) {
