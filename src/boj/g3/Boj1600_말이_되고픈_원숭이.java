@@ -7,12 +7,13 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-// 해결 못함
 public class Boj1600_말이_되고픈_원숭이 {
-	static int K, W, H, answer;
+	static int K, W, H;
 	static int[][] map;
-	static int[] di = { -1, 1, 0, 0, 2, 1, -1, -2, -2, -1, 1, 2 };
-	static int[] dj = { 0, 0, -1, 1, 1, 2, 2, 1, -1, -2, -2, -1 };
+	static int[] di = { -1, 1, 0, 0 };
+	static int[] dj = { 0, 0, -1, 1 };
+	static int[] sdi = { 2, 1, -1, -2, -2, -1, 1, 2 };
+	static int[] sdj = { 1, 2, 2, 1, -1, -2, -2, -1 };
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,60 +30,61 @@ public class Boj1600_말이_되고픈_원숭이 {
 			}
 		} // end input
 
-		answer = Integer.MAX_VALUE;
-		bfs();
-		if (answer == Integer.MAX_VALUE)
-			answer = -1;
-		System.out.println(answer);
+		System.out.println(bfs());
 	}
 
-	private static void bfs() {
+	private static int bfs() {
 		Queue<Point> queue = new ArrayDeque<>();
-		queue.add(new Point(0, 0, 0, 0));
-		boolean[][] visited = new boolean[H][W];
-		visited[0][0] = true;
+		queue.add(new Point(0, 0, 0));
+		boolean[][][] visited = new boolean[H][W][K + 1];
+		visited[0][0][0] = true;
 
+		int time = 0;
 		while (!queue.isEmpty()) {
-			Point now = queue.poll();
-			System.out.println(now);
-			if (now.i == H - 1 && now.j == W - 1 && now.cnt2 <= K) {
-				answer = Math.min(answer, now.cnt1 + now.cnt2);
-			}
-			if (now.cnt1 + now.cnt2 >= answer)
-				continue;
+			int size = queue.size();
+			for (int s = 0; s < size; s++) {
+				Point now = queue.poll();
 
-			int nexti, nextj;
-			for (int d = 0; d < di.length; d++) {
-				nexti = now.i + di[d];
-				nextj = now.j + dj[d];
+				if (now.i == H - 1 && now.j == W - 1)
+					return time;
+				int nexti, nextj, nexts;
+				for (int d = 0; d < 4; d++) { // 인접한 방향으로 움직임
+					nexti = now.i + di[d];
+					nextj = now.j + dj[d];
+					nexts = now.skill;
+					if (nexti >= 0 && nexti < H && nextj >= 0 && nextj < W && map[nexti][nextj] == 0
+							&& !visited[nexti][nextj][nexts]) {
+						visited[nexti][nextj][nexts] = true;
+						queue.add(new Point(nexti, nextj, nexts));
+					}
+				}
 
-				if (nexti >= 0 && nexti < H && nextj >= 0 && nextj < W && map[nexti][nextj] == 0
-						&& !visited[nexti][nextj]) {
-					if (d < 4)
-						queue.add(new Point(nexti, nextj, now.cnt1 + 1, now.cnt2));
-					else
-						queue.add(new Point(nexti, nextj, now.cnt1, now.cnt2 + 1));
-					visited[nexti][nextj] = true;
+				for (int d = 0; d < 8; d++) { // 말처럼 움직임
+					nexti = now.i + sdi[d];
+					nextj = now.j + sdj[d];
+					nexts = now.skill + 1;
+					if (nexti >= 0 && nexti < H && nextj >= 0 && nextj < W && nexts <= K && map[nexti][nextj] == 0
+							&& !visited[nexti][nextj][nexts]) {
+						visited[nexti][nextj][nexts] = true;
+						queue.add(new Point(nexti, nextj, nexts));
+					}
 				}
 			}
+			time++;
+
 		}
+		return -1;
 	}
 
 	static class Point {
 
-		int i, j, cnt1, cnt2;
+		int i, j, skill;
 
-		public Point(int i, int j, int cnt1, int cnt2) {
+		public Point(int i, int j, int skill) {
+			super();
 			this.i = i;
 			this.j = j;
-
-			this.cnt1 = cnt1;
-			this.cnt2 = cnt2;
-		}
-
-		@Override
-		public String toString() {
-			return "Point [i=" + i + ", j=" + j + ", cnt1=" + cnt1 + ", cnt2=" + cnt2 + "]";
+			this.skill = skill;
 		}
 	}
 }
