@@ -7,7 +7,6 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-// 진행 중
 public class Boj4485_녹색_옷_입은_애가_젤다지 {
 	static int N, minRupee;
 	static int[][] map;
@@ -50,10 +49,9 @@ public class Boj4485_녹색_옷_입은_애가_젤다지 {
 
 		while (!queue.isEmpty()) {
 			Point now = queue.poll();
-			System.out.println("i, j, r: " + now.i + ", " + now.j + ", " + now.rupee);
+//			System.out.println(now);
 			if (now.i == N - 1 && now.j == N - 1) {
 				minRupee = Math.min(now.rupee, minRupee);
-				break;
 			}
 			for (int d = 0; d < 4; d++) {
 				int nexti = now.i + di[d];
