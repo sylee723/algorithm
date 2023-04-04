@@ -1,9 +1,8 @@
 package boj.g5;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.Scanner;
 
+// 플로이드 워샬
 public class Boj9205_맥주_마시면서_걸어가기 {
 	static int N;
 	static int[][] D;
@@ -24,7 +23,11 @@ public class Boj9205_맥주_마시면서_걸어가기 {
 				for (int j = 0; j < N + 2; j++) {
 					if (i == j)
 						continue;
-					D[i][j] = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);
+					int dist = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);
+					if (dist <= 1000)
+						D[i][j] = 1;
+					else
+						D[i][j] = 102; // max value
 				}
 			}
 
@@ -40,31 +43,17 @@ public class Boj9205_맥주_마시면서_걸어가기 {
 				}
 			}
 
-			if (bfs())
+//			for (int i = 0; i < N + 2; i++) {
+//				for (int j = 0; j < N + 2; j++) {
+//					System.out.print(D[i][j] + " ");
+//				}
+//				System.out.println();
+//			}
+
+			if (D[0][N + 1] <= 101)
 				System.out.println("happy");
 			else
 				System.out.println("sad");
 		}
-	}
-
-	private static boolean bfs() {
-		boolean[] visited = new boolean[N + 2]; // 0은 집, N+1은 페스티벌 장소
-		Queue<Integer> queue = new ArrayDeque<>();
-		queue.add(0);
-		visited[0] = true;
-
-		while (!queue.isEmpty()) {
-			int now = queue.poll();
-			if (now == N + 1)
-				return true;
-			for (int j = 0; j < N + 2; j++) {
-				if (D[now][j] <= 1000 && !visited[j]) {
-					queue.add(j);
-					visited[j] = true;
-				}
-			}
-		}
-
-		return false;
 	}
 }
