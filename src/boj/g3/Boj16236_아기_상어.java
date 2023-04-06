@@ -1,68 +1,132 @@
 package boj.g3;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
-// 해결 못함. 진행중. 다시 생각
 public class Boj16236_아기_상어 {
-	static int N, sharkSize, fishCnt;
+	static int N, shi, shj, time, shSize, eatCnt;
 	static int[][] map;
-	static boolean[][] visited;
-	static int[] di = {-1, 1, 0, 0};
-	static int[] dj = {0, 0, -1, 1};
-	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
-		map = new int[N][N];
+	static int[] di = { -1, 1, 0, 0 };
+	static int[] dj = { 0, 0, -1, 1 };
 
-		int nowi = -1, nowj = -1;
-		fishCnt = 0;
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine());
+		map = new int[N][N];
+		StringTokenizer st;
+
 		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < N; j++) {
-				map[i][j] = sc.nextInt();
+				map[i][j] = Integer.parseInt(st.nextToken());
 				if (map[i][j] == 9) {
-					nowi = i;
-					nowj = j;
+					shi = i;
+					shj = j;
 					map[i][j] = 0;
-				} else if (map[i][j]>=1 && map[i][j] <=6) {
-					fishCnt++;
 				}
 			}
 		}
 
-		sharkSize = 2;
-		visited = new boolean[N][N];
-		
-		bfs(nowi, nowj);
+		shSize = 2;
+		eatCnt = 0;
+		while (true) {
+			if (!eatFish())
+				break;
+//			for (int i = 0; i <N; i ++) {
+//				for (int j = 0; j <N; j++) {
+//					if (i == shi && j == shj) {
+//						System.out.print("<"+shSize+">");
+//					} else {
+//						System.out.print(" "+map[i][j]+" ");
+//					}
+//				}
+//				System.out.println();
+//			}
+		}
+		System.out.println(time);
 	}
 
-	private static int bfs(int nowi, int nowj) {
-		Queue<Shark> queue = new ArrayDeque<>();
-		queue.add(new Shark(nowi, nowj));
-		visited[nowi][nowj] = true;
-		
-		int time = 0;
+	private static boolean eatFish() {
+		Queue<Point> queue = new ArrayDeque<>();
+		queue.add(new Point(shi, shj));
+		boolean[][] visited = new boolean[N][N];
+		visited[shi][shj] = true;
+
+		int dist = 0;
 		while (!queue.isEmpty()) {
 			int size = queue.size();
-			for (int s=0; s<size; s++) {
-				Point shark = queue.poll();
-				if
-			
+			ArrayList<Point> targetList = new ArrayList<>();
+			for (int s = 0; s < size; s++) {
+				Point now = queue.poll();
+				if (map[now.i][now.j] > 0 && map[now.i][now.j] < shSize) {
+					targetList.add(now);
+				}
+				for (int d = 0; d < 4; d++) {
+					int nexti = now.i + di[d];
+					int nextj = now.j + dj[d];
+
+					if (nexti >= 0 && nexti < N && nextj >= 0 && nextj < N && !visited[nexti][nextj]
+							&& map[nexti][nextj] <= shSize) {
+						visited[nexti][nextj] = true;
+						queue.add(new Point(nexti, nextj));
+					}
+				}
 			}
+
+			if (!targetList.isEmpty()) { // 거리가 가까운 물고기 중 가장 위, 가장 왼쪽에 있는 물고기 고르기
+//				System.out.println(targetList);
+				Point target = null;
+				int min_i = Integer.MAX_VALUE;
+				int min_j = Integer.MAX_VALUE;
+				for (Point fish : targetList) {
+					if (min_i > fish.i) {
+						min_i = fish.i;
+						min_j = fish.j;
+						target = fish;
+					} else if (min_i == fish.i) {
+						if (min_j > fish.j) {
+							min_j = fish.j;
+							target = fish;
+						}
+					}
+				}
+
+				// target 물고기 먹기
+//				System.out.println("타겟 물고기: "+target);
+				shi = target.i;
+				shj = target.j;
+				map[shi][shj] = 0;
+				eatCnt++;
+				if (eatCnt == shSize) {
+					shSize++;
+					eatCnt = 0;
+				}
+				time += dist;
+				return true;
+			}
+			dist++;
 		}
-		
+
+		return false; // 물고기를 못먹으면 false 리턴
 	}
 
-	static class Shark {
-		int i, j, size;
+	static class Point {
 
-		public Shark(int i, int j, int size) {
+		int i, j;
+
+		public Point(int i, int j) {
 			this.i = i;
 			this.j = j;
-			this.size = size;
+		}
+
+		@Override
+		public String toString() {
+			return "Point [i=" + i + ", j=" + j + "]";
 		}
 	}
 }
