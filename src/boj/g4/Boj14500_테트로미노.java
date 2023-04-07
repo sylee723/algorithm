@@ -4,14 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-// 틀렸습니다
-/* 반례)
-4 4
-1 1 1 1
-2 1000 1 1
-1 1000 2 1
-1 1 1 1
- */
+
+
 public class Boj14500_테트로미노 {
 	static int answer;
 
@@ -91,18 +85,17 @@ public class Boj14500_테트로미노 {
 			}
 		}
 
-		// 4. ■
-		//    ■ ■
-		//      ■
-		// 5. ■ ■ 
+		// 4.   ■
+		//	  ■ ■
+		//	  ■
+		// 5. ■ ■
 		//    ■ ■
 
-		
 		int sum_2;
 		int[] di_1 = { 1, -1, -1 };
 		int[] dj_1 = { 0, 0, 1 };
-		int[] di_2 = { 1, 1, 0 };
-		int[] dj_2 = { 1, 1, 1 };
+		int[] di_2 = { 1, 1, 1 };
+		int[] dj_2 = { 1, 1, 0 };
 		for (int i = 0; i < N - 1; i++) {
 			for (int j = 0; j < M - 1; j++) {
 				sum_2 = board[i][j] + board[i][j + 1];
