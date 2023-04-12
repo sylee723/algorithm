@@ -3,13 +3,12 @@ package swea;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
+// fail
 public class Swea2383_점심_식사시간 {
 	static int N, stair1, stair2, answer;
 	static int[][] map, pMap;
@@ -50,8 +49,15 @@ public class Swea2383_점심_식사시간 {
 					}
 				}
 			}
-			bfs(i1, j1, 1);
-			bfs(i2, j2, 2);
+
+			for (int i = 0; i < people.size(); i++) { // 계단 입구까지 이동 시간 계산
+				Person p = people.get(i);
+				int t1 = Math.abs(p.i - i1) + Math.abs(p.j - j1);
+				int t2 = Math.abs(p.i - i2) + Math.abs(p.j - j2);
+				p.time1 = t1;
+				p.time2 = t2;
+				people.put(i, p);
+			}
 
 			selected = new boolean[people.size()];
 			answer = Integer.MAX_VALUE;
@@ -121,43 +127,6 @@ public class Swea2383_점심_식사시간 {
 
 			}
 
-			time++;
-		}
-	}
-
-	private static void bfs(int i, int j, int stair) {
-		Queue<int[]> queue = new ArrayDeque<>();
-		boolean[][] visited = new boolean[N][N];
-		visited[i][j] = true;
-		queue.add(new int[] { i, j });
-
-		int time = 0;
-		while (!queue.isEmpty()) {
-			int size = queue.size();
-			for (int s = 0; s < size; s++) {
-				int[] now = queue.poll();
-				if (map[now[0]][now[1]] == 1) {
-					int pNum = pMap[now[0]][now[1]];
-					Person p = people.get(pNum);
-					if (stair == 1) {
-						p.time1 = time;
-					} else if (stair == 2) {
-						p.time2 = time;
-					}
-					people.put(pNum, p);
-				}
-
-				for (int d = 0; d < 4; d++) {
-					int nexti = now[0] + di[d];
-					int nextj = now[1] + dj[d];
-
-					if (nexti >= 0 && nexti < N && nextj >= 0 && nextj < N && !visited[nexti][nextj]
-							&& map[nexti][nextj] < 2) {
-						queue.add(new int[] { nexti, nextj });
-						visited[nexti][nextj] = true;
-					}
-				}
-			}
 			time++;
 		}
 	}
