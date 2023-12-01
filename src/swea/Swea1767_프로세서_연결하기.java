@@ -4,89 +4,134 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-// 해결 못함. 진행중
 public class Swea1767_프로세서_연결하기 {
-	static int N, coreCnt, onCnt, totalLen;
-	static ArrayList<Core> core;
-	static int[][] map, copy;
-	static int[] dir;
+	static int N;
+	static int[][] board;
+	static ArrayList<Point> coreList;
+	static int coreCnt, lineLen;
+	static int[] coreStatus;
 	static int[] di = { -1, 1, 0, 0 };
 	static int[] dj = { 0, 0, -1, 1 };
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
+
 		int TC = Integer.parseInt(br.readLine());
+
 		for (int tc = 1; tc <= TC; tc++) {
 			N = Integer.parseInt(br.readLine());
-			map = new int[N][N];
-			coreCnt = 0;
-			core = new ArrayList<>();
+			board = new int[N][N];
+
+			coreList = new ArrayList<>();
+
 			for (int i = 0; i < N; i++) {
 				st = new StringTokenizer(br.readLine());
 				for (int j = 0; j < N; j++) {
-					map[i][j] = Integer.parseInt(st.nextToken());
-					if (map[i][j] == 1) {
-						coreCnt++;
-						if (i == 0 || j == 0 || i == N - 1 || j == N - 1)
-							continue;
-						core.add(new Core(i, j)); // 전선 연결해야 할 코어들 저장
+					board[i][j] = Integer.parseInt(st.nextToken());
+					if (board[i][j] == 1 && i != 0 && i != N - 1 && j != 0 && j != N - 1) {
+						coreList.add(new Point(i, j));
 					}
 				}
 			}
-			dir = new int[core.size()];
-			setDir(0);
 
-		} // end test case
+			coreCnt = 0;
+			lineLen = Integer.MAX_VALUE;
+			coreStatus = new int[coreList.size()];
+
+			setCoreStatus(0, 0, 0);
+
+			System.out.println("#" + tc + " " + lineLen);
+		}
 	}
 
-	private static void setDir(int idx) {
-		if (idx == core.size()) {
-			System.out.println(Arrays.toString(dir));
-
-			deepcopy(map, copy);
-			for (int i = 0; i < core.size(); i++) {
-				if (!isAvailable(i, dir[i]))
-					return;
+	private static void setCoreStatus(int idx, int cnt, int len) {
+		if (idx == coreList.size()) {
+			if (coreCnt < cnt) {
+				coreCnt = cnt;
+				lineLen = len;
+			} else if (coreCnt == cnt) {
+				lineLen = Math.min(lineLen, len);
 			}
+
 			return;
 		}
-		for (int i = 0; i < 4; i++) {
-			dir[idx] = i;
-			setDir(idx + 1);
-		}
-	}
 
-	private static boolean isAvailable(int idx, int d) {
-		Core now = core.get(idx);
-		int nexti = now.i + di[d];
-		int nextj = now.j + dj[d];
-		while (true) {
-			if (copy[nexti][nextj] == 1)
-				return false;
-			if ((nexti == 0 || nexti == N - 1 || nextj == 0 || nextj == N - 1) && copy[nexti][nextj] == 0)
-				return true;
-			copy[nexti][nextj] = 1;
-			nexti += di[d];
-			nextj += dj[d];
+		if (coreList.size() - idx + cnt < coreCnt) { // 남은 코어 다 연결해도 코어의 수가 더 적은 경우
+			return;
 		}
-	}
 
-	private static void deepcopy(int[][] map, int[][] copy) {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				copy[i][j] = map[i][j];
+		for (int d = 0; d < 4; d++) {
+			int result = setLine(idx, d);
+			if (result > 0) {
+				coreStatus[idx] = d;
+				setCoreStatus(idx + 1, cnt + 1, len + result);
+				removeLine(idx, d);
 			}
 		}
+
+		coreStatus[idx] = -1; // 전원에 연결하지 않음
+		setCoreStatus(idx + 1, cnt, len);
 	}
 
-	static class Core {
+	private static void removeLine(int idx, int d) {
+		Point core = coreList.get(idx);
+
+		int nowi = core.i;
+		int nowj = core.j;
+
+		while (true) {
+			int nexti = nowi + di[d];
+			int nextj = nowj + dj[d];
+
+			if (nexti < 0 || nexti >= N || nextj < 0 || nextj >= N) {
+				break;
+			}
+
+			board[nexti][nextj] = 0;
+			nowi = nexti;
+			nowj = nextj;
+		}
+
+	}
+
+	private static int setLine(int idx, int d) {
+		Point core = coreList.get(idx);
+		int len = 0;
+
+		int nowi = core.i;
+		int nowj = core.j;
+
+		while (true) {
+			int nexti = nowi + di[d];
+			int nextj = nowj + dj[d];
+
+			if (nexti < 0 || nexti >= N || nextj < 0 || nextj >= N) {
+				break;
+			}
+
+			if (board[nexti][nextj] == 1) { // 전선을 놓을 수 없는 경우
+				for (int l = len; l > 0; l--) {
+					board[core.i + di[d] * l][core.j + dj[d] * l] = 0; // 이전에 연결한 전선 지우기
+				}
+				return -1;
+			}
+
+			board[nexti][nextj] = 1;
+			len++;
+			nowi = nexti;
+			nowj = nextj;
+		}
+
+		return len;
+	}
+
+	static class Point {
 		int i, j;
 
-		public Core(int i, int j) {
+		public Point(int i, int j) {
 			super();
 			this.i = i;
 			this.j = j;
