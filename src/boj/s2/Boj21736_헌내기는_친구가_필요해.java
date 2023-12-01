@@ -1,0 +1,84 @@
+package boj.s2;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Boj21736_헌내기는_친구가_필요해 {
+	static int N, M;
+	static char[][] campus;
+	static int[] di = { -1, 1, 0, 0 };
+	static int[] dj = { 0, 0, -1, 1 };
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		campus = new char[N][M];
+
+		int si = 0;
+		int sj = 0;
+		for (int i = 0; i < N; i++) {
+			String line = br.readLine();
+			for (int j = 0; j < M; j++) {
+				campus[i][j] = line.charAt(j);
+
+				if (campus[i][j] == 'I') {
+					si = i;
+					sj = j;
+				}
+			}
+		}
+
+		int answer = bfs(si, sj);
+
+		if (answer == 0)
+			System.out.println("TT");
+		else
+			System.out.println(answer);
+	}
+
+	private static int bfs(int si, int sj) {
+		Queue<Point> queue = new ArrayDeque<>();
+		boolean[][] visit = new boolean[N][M];
+
+		queue.add(new Point(si, sj));
+		visit[si][sj] = true;
+
+		int count = 0;
+		while (!queue.isEmpty()) {
+			Point now = queue.poll();
+			if (campus[now.i][now.j] == 'P') {
+				count++;
+			}
+			for (int d = 0; d < 4; d++) {
+				int nexti = now.i + di[d];
+				int nextj = now.j + dj[d];
+
+				if (nexti < 0 || nexti >= N || nextj < 0 || nextj >= M)
+					continue;
+
+				if (!visit[nexti][nextj] && campus[nexti][nextj] != 'X') {
+					queue.add(new Point(nexti, nextj));
+					visit[nexti][nextj] = true;
+				}
+			}
+		}
+
+		return count;
+	}
+
+	static class Point {
+		int i, j;
+
+		public Point(int i, int j) {
+			this.i = i;
+			this.j = j;
+		}
+	}
+}
