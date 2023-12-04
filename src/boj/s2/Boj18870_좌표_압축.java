@@ -1,47 +1,42 @@
 package boj.s2;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
-// 시간 초과
 public class Boj18870_좌표_압축 {
-	static int[] compArr;
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int N = Integer.parseInt(br.readLine());
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt();
-		Set<Integer> set = new HashSet<>();
 		int[] arr = new int[N];
+		int[] sortedArr = new int[N];
 		for (int i = 0; i < N; i++) {
-			arr[i] = sc.nextInt();
-			set.add(arr[i]);
-		}
-		compArr = new int[set.size()];
-		int idx = 0;
-		for (int num : set) {
-			compArr[idx] = num;
-			idx++;
+			arr[i] = sortedArr[i] = Integer.parseInt(st.nextToken());
 		}
 
-		Arrays.sort(compArr);
+		Arrays.sort(sortedArr);
+		Map<Integer, Integer> map = new HashMap<>();
+		int count = 0;
+		int num = sortedArr[0];
+		map.put(num, count);
+		for (int i = 1; i < N; i++) {
+			if (sortedArr[i] != num) {
+				count++;
+				map.put(sortedArr[i], count);
+			}
+			num = sortedArr[i];
+		}
 
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < N; i++) {
-			int result = binarySearch(0, set.size() - 1, arr[i]);
-			System.out.print(result + " ");
+			sb.append(map.get(arr[i])).append(" ");
 		}
+		System.out.println(sb.toString());
 	}
-
-	private static int binarySearch(int left, int right, int target) {
-		int mid = (left + right) / 2;
-		if (compArr[mid] == target) {
-			return mid;
-		} else if (compArr[mid] < target) {
-			return binarySearch(mid + 1, right, target);
-		} else {
-			return binarySearch(left, mid - 1, target);
-		}
-	}
-
 }
