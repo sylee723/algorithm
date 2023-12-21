@@ -7,10 +7,8 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-// 틀렸습니다
 public class Boj1194_달이_차오른다_가자 {
 	static int N, M;
-	static char[][] map;
 	static int[] di = { -1, 1, 0, 0 };
 	static int[] dj = { 0, 0, -1, 1 };
 
@@ -21,59 +19,72 @@ public class Boj1194_달이_차오른다_가자 {
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		map = new char[N][M];
-		int nowi = -1, nowj = -1;
+		char[][] map = new char[N][M];
+		Point start = null;
+
 		for (int i = 0; i < N; i++) {
 			String line = br.readLine();
 			for (int j = 0; j < M; j++) {
 				map[i][j] = line.charAt(j);
 				if (map[i][j] == '0') {
-					nowi = i;
-					nowj = j;
+					start = new Point(i, j, 0);
 					map[i][j] = '.';
 				}
 			}
 		}
-		System.out.println(bfs(nowi, nowj));
+
+		int answer = bfs(start, map);
+		System.out.println(answer);
 	}
 
-	private static int bfs(int nowi, int nowj) {
+	private static int bfs(Point start, char[][] map) {
 		Queue<Point> queue = new ArrayDeque<>();
-		queue.add(new Point(nowi, nowj, 0));
 		boolean[][][] visited = new boolean[N][M][64];
-		visited[nowi][nowj][0] = true;
-		int time = 0;
+
+		visited[start.i][start.j][start.key] = true;
+		queue.add(start);
+
+		int count = 0;
+		int size;
 		while (!queue.isEmpty()) {
-			int size = queue.size();
+			size = queue.size();
+
 			for (int s = 0; s < size; s++) {
 				Point now = queue.poll();
 				if (map[now.i][now.j] == '1') {
-					return time;
+					return count;
 				}
 
 				for (int d = 0; d < 4; d++) {
 					int nexti = now.i + di[d];
 					int nextj = now.j + dj[d];
-					int nextkey = now.key;
-					if (nexti < 0 || nexti >= N || nextj < 0 || nextj >= M || map[nexti][nextj] == '#'
-							|| visited[nexti][nextj][nextkey])
+
+					if (nexti < 0 || nexti >= N || nextj < 0 || nextj >= M || map[nexti][nextj] == '#')
 						continue;
 
-					if (map[nexti][nextj] >= 'a' && map[nexti][nextj] <= 'f') { // 열쇠를 집는 경우
-						nextkey = nextkey | (1 << (map[nexti][nextj] - 'a'));
-						map[nexti][nextj] = '.';
-					} else if (map[nexti][nextj] >= 'A' && map[nexti][nextj] <= 'F') { // 문. 대응하는 열쇠가 있는지 확인
-						if (((1 << (map[nexti][nextj] - 'A')) & nextkey) == 0) // 대응하는 키가 없으면 이동 못함
-							continue;
+					if (map[nexti][nextj] == '.' || map[nexti][nextj] == '1') {
+						if (!visited[nexti][nextj][now.key]) {
+							visited[nexti][nextj][now.key] = true;
+							queue.add(new Point(nexti, nextj, now.key));
+						}
+					} else if (map[nexti][nextj] >= 'a' && map[nexti][nextj] <= 'f') {
+						// 열쇠를 집는다
+						int nextKey = now.key | (1 << (map[nexti][nextj] - 'a'));
+						if (!visited[nexti][nextj][nextKey]) {
+							visited[nexti][nextj][nextKey] = true;
+							queue.add(new Point(nexti, nextj, nextKey));
+						}
+					} else if (map[nexti][nextj] >= 'A' && map[nexti][nextj] <= 'F') {
+						if (!visited[nexti][nextj][now.key] && (now.key & (1 << (map[nexti][nextj] - 'A'))) > 0) {
+							visited[nexti][nextj][now.key] = true;
+							queue.add(new Point(nexti, nextj, now.key));
+						}
 					}
-
-					// 이동
-					queue.add(new Point(nexti, nextj, nextkey));
-					visited[nexti][nextj][nextkey] = true;
 				}
 			}
-			time++;
+			count++;
 		}
+
 		return -1;
 	}
 
@@ -81,7 +92,6 @@ public class Boj1194_달이_차오른다_가자 {
 		int i, j, key;
 
 		public Point(int i, int j, int key) {
-			super();
 			this.i = i;
 			this.j = j;
 			this.key = key;
