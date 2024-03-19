@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-// 해결 못함
 public class Boj1806_부분합 {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -23,21 +22,23 @@ public class Boj1806_부분합 {
 		int start = 0;
 		int end = 0;
 		int total = 0;
-		int answer = Integer.MAX_VALUE;
+		int answer = N + 1;
 
-		while (start < N && end < N) {
-			if (total >= S) {
-				answer = Math.min(end - start, answer);
+		while (end < N) {
+			total += num[end];
+
+			while (total >= S && start <= end) {
+				answer = Math.min(end - start + 1, answer);
 				total -= num[start];
 				start++;
-			} else {
-				total += num[end];
-				end++;
 			}
+			end++;
 		}
 
-		if (answer == Integer.MAX_VALUE)
+		if (answer == N + 1) {
 			answer = 0;
+		}
+
 		System.out.println(answer);
 	}
 }
